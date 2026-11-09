@@ -8,10 +8,12 @@ public enum DuplaColors {
     public static let mutedText = Color("MutedText", bundle: .module)
     public static let border = Color("Border", bundle: .module)
     public static let lavender = Color("Lavender", bundle: .module)
+    public static let tapeKraft = Color("TapeKraft", bundle: .module)
     public static let error = Color("Error", bundle: .module)
 }
 
 public enum DuplaMetrics {
+    public static let extraSmall: CGFloat = 4
     public static let small: CGFloat = 8
     public static let medium: CGFloat = 12
     public static let large: CGFloat = 16
@@ -27,6 +29,7 @@ public enum DuplaMetrics {
         ("onInk", DuplaColors.onInk), ("text", DuplaColors.text),
         ("mutedText", DuplaColors.mutedText), ("border", DuplaColors.border),
         ("lavender", DuplaColors.lavender), ("error", DuplaColors.error),
+        ("tapeKraft", DuplaColors.tapeKraft),
     ]
 
     VStack(alignment: .leading, spacing: DuplaMetrics.small) {

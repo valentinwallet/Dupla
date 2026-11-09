@@ -28,6 +28,48 @@ public struct DuplaAnnotation: View {
     }
 }
 
+public extension View {
+    /// Draws a mark relative to this view's bounds.
+    func duplaAnnotation(_ mark: DuplaAnnotation.Mark) -> some View {
+        modifier(DuplaAnnotationModifier(mark: mark))
+    }
+}
+
+private struct DuplaAnnotationModifier: ViewModifier {
+    let mark: DuplaAnnotation.Mark
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        switch mark {
+        case .arrow:
+            content.overlay(alignment: .topTrailing) {
+                DuplaAnnotation(mark)
+                    .frame(width: 62, height: 30)
+                    .offset(x: 51, y: -24)
+            }
+        case .circle:
+            content.overlay {
+                DuplaAnnotation(mark)
+                    .padding(.horizontal, -DuplaMetrics.small)
+                    .padding(.vertical, -DuplaMetrics.extraSmall)
+            }
+        case .doubleUnderline:
+            content.overlay(alignment: .bottom) {
+                DuplaAnnotation(mark)
+                    .frame(height: 6)
+                    .offset(y: 5)
+            }
+        case .bracket:
+            content.overlay(alignment: .leading) {
+                DuplaAnnotation(mark)
+                    .frame(width: 10)
+                    .padding(.vertical, -DuplaMetrics.extraSmall)
+                    .offset(x: -14)
+            }
+        }
+    }
+}
+
 public struct DuplaDoodle: View {
     public enum Motif {
         case sun
@@ -35,6 +77,7 @@ public struct DuplaDoodle: View {
         case bird
         case sprout
         case rainCloud
+        case smiley
 
         fileprivate var sketch: SketchShape.Kind {
             switch self {
@@ -43,6 +86,7 @@ public struct DuplaDoodle: View {
             case .bird: .bird
             case .sprout: .sprout
             case .rainCloud: .rainCloud
+            case .smiley: .smiley
             }
         }
     }
@@ -82,7 +126,8 @@ struct SketchStroke: View {
 struct SketchShape: Shape {
     enum Kind {
         case arrow, circle, doubleUnderline, bracket, singleUnderline, stamp
-        case sun, flower, bird, sprout, rainCloud
+        case sun, flower, bird, sprout, rainCloud, smiley
+        case photoFreehand, photoDoubleStroke, photoLoop
     }
 
     let kind: Kind
@@ -120,6 +165,42 @@ struct SketchShape: Shape {
                 path.curve(99, 59, via: 100, 20, 98, 47)
                 path.curve(2, 60, via: 71, 62, 25, 63)
                 path.curve(1, 5, via: 0, 50, 2, 20)
+            case .smiley:
+                path.move(34, 21)
+                path.line(36, 26)
+                path.move(56, 18)
+                path.line(57, 24)
+                path.move(27, 39)
+                path.curve(70, 35, via: 39, 54, 57, 56)
+            case .photoFreehand:
+                path.move(1, 2)
+                path.curve(100, 1, via: 32, 3, 72, -1)
+                path.move(98, 0)
+                path.curve(100, 63, via: 101, 25, 97, 48)
+                path.move(101, 61)
+                path.curve(0, 63, via: 75, 63, 34, 60)
+                path.move(2, 64)
+                path.curve(2, 0, via: -1, 49, 0, 20)
+            case .photoDoubleStroke:
+                path.move(10, 5)
+                path.curve(90, 3, via: 39, 1, 70, 2)
+                path.curve(96, 12, via: 94, 3, 96, 6)
+                path.curve(92, 60, via: 98, 30, 94, 55)
+                path.curve(5, 59, via: 70, 62, 25, 63)
+                path.curve(4, 13, via: 2, 52, 2, 26)
+                path.curve(11, 7, via: 4, 7, 6, 6)
+                path.move(10, 9)
+                path.curve(97, 6, via: 44, 7, 71, 2)
+                path.curve(94, 55, via: 99, 21, 95, 40)
+                path.curve(13, 62, via: 66, 56, 42, 63)
+                path.curve(8, 9, via: 9, 50, 10, 27)
+            case .photoLoop:
+                path.move(89, 58)
+                path.curve(11, 58, via: 67, 64, 22, 68)
+                path.curve(8, 17, via: 1, 52, 1, 29)
+                path.curve(76, 2, via: 19, 5, 54, 1)
+                path.curve(92, 54, via: 108, 0, 97, 27)
+                path.curve(106, 51, via: 95, 54, 103, 50)
             case .sun:
                 path.move(49, 15)
                 path.curve(36, 22, via: 43, 10, 35, 14)
@@ -221,18 +302,31 @@ private extension Path {
         ("Double trait", .doubleUnderline), ("Crochet", .bracket),
     ]
 
-    VStack(alignment: .leading, spacing: DuplaMetrics.medium) {
+    VStack(alignment: .leading, spacing: DuplaMetrics.section) {
         ForEach(marks.indices, id: \.self) { index in
+            let (name, mark) = marks[index]
+
             HStack(spacing: DuplaMetrics.section) {
-                Text(marks[index].0)
-                    .duplaTextStyle(.label)
+                Text(name)
                     .frame(width: 110, alignment: .leading)
-                DuplaAnnotation(marks[index].1)
-                    .frame(width: index == 3 ? 18 : 108, height: 38)
+
+                if mark == .bracket {
+                    Text("Voir la version")
+                        .duplaAnnotation(.bracket)
+                } else {
+                    HStack(alignment: .firstTextBaseline, spacing: DuplaMetrics.small) {
+                        Text("Voir la")
+                        Text("version")
+                            .duplaAnnotation(mark)
+                    }
+                    .accessibilityElement(children: .combine)
+                }
             }
+            .duplaTextStyle(.label)
         }
     }
     .foregroundStyle(DuplaColors.text)
+    .padding(.trailing, 52)
     .padding(DuplaMetrics.section)
     .background(DuplaColors.paper)
 }
@@ -240,7 +334,7 @@ private extension Path {
 #Preview("Dessins Dupla") {
     let motifs: [(String, DuplaDoodle.Motif)] = [
         ("Soleil", .sun), ("Fleur", .flower), ("Oiseau", .bird),
-        ("Pousse", .sprout), ("Nuage", .rainCloud),
+        ("Pousse", .sprout), ("Nuage", .rainCloud), ("Smiley", .smiley),
     ]
 
     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: DuplaMetrics.large) {

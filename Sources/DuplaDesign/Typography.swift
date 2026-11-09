@@ -3,6 +3,20 @@ import Foundation
 import SwiftUI
 
 public enum DuplaTextStyle {
+    public enum Weight: CaseIterable, Hashable {
+        case regular
+        case semibold
+        case bold
+
+        fileprivate func applying(to font: Font) -> Font {
+            switch self {
+            case .regular: font
+            case .semibold: font.weight(.semibold)
+            case .bold: font.weight(.bold)
+            }
+        }
+    }
+
     case display
     case title
     case note
@@ -10,37 +24,47 @@ public enum DuplaTextStyle {
     case label
     case caption
 
-    public var font: Font {
+    public var font: Font { font(weight: .regular) }
+
+    /// The handwritten roles use Annie in Regular at every weight.
+    public func font(weight: Weight) -> Font {
         switch self {
         case .display: DuplaFont.annie.font(size: 44, relativeTo: .largeTitle)
         case .title: DuplaFont.annie.font(size: 30, relativeTo: .title2)
         case .note: DuplaFont.annie.font(size: 23, relativeTo: .body)
-        case .body: .body
-        case .label: DuplaFont.mono.font(size: 14, relativeTo: .callout)
-        case .caption: DuplaFont.mono.font(size: 12, relativeTo: .caption)
+        case .body: weight.applying(to: .body)
+        case .label: DuplaFont.mono(weight).font(size: 14, relativeTo: .callout)
+        case .caption: DuplaFont.mono(weight).font(size: 12, relativeTo: .caption)
         }
     }
 }
 
 public extension View {
-    func duplaTextStyle(_ style: DuplaTextStyle) -> some View {
-        font(style.font)
+    func duplaTextStyle(
+        _ style: DuplaTextStyle,
+        weight: DuplaTextStyle.Weight = .regular
+    ) -> some View {
+        font(style.font(weight: weight))
     }
 }
 
-private enum DuplaFont: CaseIterable {
+private enum DuplaFont: Hashable {
     case annie
-    case mono
+    case mono(DuplaTextStyle.Weight)
+
+    private static let faces: [Self] = [.annie] + DuplaTextStyle.Weight.allCases.map(Self.mono)
 
     private var resource: String {
         switch self {
         case .annie: "AnnieUseYourTelescope"
-        case .mono: "IBMPlexMono"
+        case .mono(.regular): "IBMPlexMono"
+        case .mono(.semibold): "IBMPlexMono-SemiBold"
+        case .mono(.bold): "IBMPlexMono-Bold"
         }
     }
 
     private static let postScriptNames: [Self: String] = Dictionary(
-        uniqueKeysWithValues: allCases.compactMap { face in
+        uniqueKeysWithValues: faces.compactMap { face in
             guard let url = Bundle.module.url(
                 forResource: face.resource, withExtension: "ttf", subdirectory: "Fonts"
             ),
@@ -60,7 +84,10 @@ private enum DuplaFont: CaseIterable {
 
     func font(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
         guard let name = Self.postScriptNames[self] else {
-            return .system(style, design: self == .mono ? .monospaced : .default)
+            switch self {
+            case .annie: return .system(style)
+            case .mono(let weight): return weight.applying(to: .system(style, design: .monospaced))
+            }
         }
         return .custom(name, size: size, relativeTo: style)
     }
@@ -81,6 +108,28 @@ private enum DuplaFont: CaseIterable {
             .duplaTextStyle(.label)
         Text("12 photos")
             .duplaTextStyle(.caption)
+    }
+    .foregroundStyle(DuplaColors.text)
+    .padding(DuplaMetrics.section)
+    .background(DuplaColors.paper)
+}
+
+#Preview("Graisses IBM Plex Mono") {
+    let samples: [(DuplaTextStyle.Weight, String)] = [
+        (.regular, "Regular"), (.semibold, "SemiBold"), (.bold, "Bold"),
+    ]
+
+    Grid(alignment: .leading, horizontalSpacing: DuplaMetrics.medium, verticalSpacing: DuplaMetrics.medium) {
+        ForEach(samples, id: \.0) { weight, name in
+            GridRow {
+                Text(name)
+                    .duplaTextStyle(.label, weight: weight)
+                Text("Rechercher une photo")
+                    .duplaTextStyle(.label, weight: weight)
+                Text("12 photos")
+                    .duplaTextStyle(.caption, weight: weight)
+            }
+        }
     }
     .foregroundStyle(DuplaColors.text)
     .padding(DuplaMetrics.section)

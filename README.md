@@ -38,12 +38,27 @@ struct DuplaExample: View {
 
 ## Composants
 
-- **Typographie** · `.display`, `.title` et `.note` utilisent Annie Use Your Telescope. `.label` et `.caption` utilisent IBM Plex Mono. `.body` utilise la police système. Les polices et leurs licences OFL sont intégrées au package.
+- **Typographie** · `.display`, `.title` et `.note` utilisent Annie Use Your Telescope. `.label` et `.caption` utilisent IBM Plex Mono. Ajoute `weight: .semibold` ou `weight: .bold` à `.duplaTextStyle` pour choisir leur graisse. `.body` utilise la police système et accepte les mêmes graisses. Annie reste en Regular. Les polices et leurs licences OFL sont intégrées au package.
 - **Boutons** · Applique `.buttonStyle(.dupla(...))` à un `Button` SwiftUI. Les variantes sont `.primary`, `.outline`, `.lavender` et `.pencil`. La hauteur minimale est de 48 pt.
 - **Champs** · `DuplaTextField` propose `.standard`, `.search` et `.notes`, avec un fond lavande au focus et un message d’erreur optionnel.
 - **Pastilles** · `DuplaBadge` propose le point `.dot` et le tampon `.stamp`, chacun en ton `.accent` ou `.neutral`.
-- **Annotations** · Place un `DuplaAnnotation` dans un `overlay` ou à côté du texte. Dimensionne-le avec le texte à annoter. Quatre gestes sont disponibles, `.arrow`, `.circle`, `.doubleUnderline` et `.bracket`.
+- **Annotations** · Applique `.duplaAnnotation(.circle)` à un mot ou à un libellé. Le modificateur place le dessin par rapport à la vue. Il propose aussi `.arrow`, `.doubleUnderline` et `.bracket`. Utilise `DuplaAnnotation` directement si tu veux placer le dessin toi-même.
 - **États vides** · `DuplaEmptyState` accepte un titre, un message optionnel et une action SwiftUI optionnelle. Les motifs soleil, fleur, oiseau, pousse et nuage de pluie sont aussi disponibles via `DuplaDoodle`.
+
+Pour accentuer un compteur et annoter un mot dans un libellé court
+
+```swift
+Text("12 photos")
+    .duplaTextStyle(.caption, weight: .semibold)
+
+HStack(alignment: .firstTextBaseline, spacing: DuplaMetrics.small) {
+    Text("Voir la")
+    Text("version")
+        .duplaAnnotation(.circle)
+}
+.duplaTextStyle(.label)
+.accessibilityElement(children: .combine)
+```
 
 ## Previews et couleurs
 

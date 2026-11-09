@@ -24,7 +24,7 @@ public struct DuplaBadge: View {
     public var body: some View {
         let color = tone == .accent ? DuplaColors.ink : DuplaColors.mutedText
 
-        HStack(spacing: 6) {
+        HStack(spacing: 8) {
             if variant == .dot {
                 Circle()
                     .frame(width: 6, height: 6)

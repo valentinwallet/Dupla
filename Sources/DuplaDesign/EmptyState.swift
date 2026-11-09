@@ -19,22 +19,24 @@ public struct DuplaEmptyState<Action: View>: View {
     }
 
     public var body: some View {
-        VStack(spacing: DuplaMetrics.medium) {
+        VStack(spacing: DuplaMetrics.large) {
             DuplaDoodle(motif)
                 .frame(width: 116, height: 76)
 
-            Text(title)
-                .duplaTextStyle(.title)
-                .foregroundStyle(DuplaColors.text)
-                .accessibilityAddTraits(.isHeader)
+            VStack(spacing: 0) {
+                Text(title)
+                    .duplaTextStyle(.title)
+                    .foregroundStyle(DuplaColors.text)
+                    .accessibilityAddTraits(.isHeader)
 
-            if let message {
-                Text(message)
-                    .duplaTextStyle(.body)
-                    .foregroundStyle(DuplaColors.mutedText)
+                if let message {
+                    Text(message)
+                        .duplaTextStyle(.body)
+                        .foregroundStyle(DuplaColors.mutedText)
+                }
             }
 
-            action
+            self.action
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: 360)

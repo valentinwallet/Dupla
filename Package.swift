@@ -16,6 +16,7 @@ let package = Package(
             resources: [
                 .copy("Resources/Fonts"),
                 .process("Resources/Colors.xcassets"),
+                .process("Resources/Materials.xcassets"),
             ]
         ),
     ]
