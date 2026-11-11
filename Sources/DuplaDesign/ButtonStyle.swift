@@ -6,6 +6,7 @@ public struct DuplaButtonStyle: ButtonStyle {
         case outline
         case lavender
         case pencil
+        case icon
     }
 
     public enum Size {
@@ -30,7 +31,8 @@ public struct DuplaButtonStyle: ButtonStyle {
 
         configuration.label
             .duplaTextStyle(size == .small ? .caption : .label)
-            .foregroundStyle(variant == .primary ? DuplaColors.onInk : DuplaColors.ink)
+            .foregroundStyle(variant == .icon && !isEnabled ? DuplaColors.mutedText
+                             : variant == .primary ? DuplaColors.onInk : DuplaColors.ink)
             .overlay(alignment: .bottom) {
                 if variant == .pencil {
                     SketchStroke(.singleUnderline)
@@ -40,7 +42,7 @@ public struct DuplaButtonStyle: ButtonStyle {
             }
             .padding(.horizontal, self.horizontalPadding)
             .padding(.vertical, size == .small ? DuplaMetrics.extraSmall : DuplaMetrics.small)
-            .frame(minHeight: size == .small ? DuplaMetrics.smallControlHeight : DuplaMetrics.controlHeight)
+            .frame(minWidth: variant == .icon ? controlHeight : nil, minHeight: controlHeight)
             .background(fill, in: shape)
             .overlay {
                 if variant == .outline {
@@ -52,17 +54,21 @@ public struct DuplaButtonStyle: ButtonStyle {
             .opacity(isEnabled ? (configuration.isPressed ? 0.75 : 1) : 0.45)
     }
 
+    private var controlHeight: CGFloat {
+        size == .small ? DuplaMetrics.smallControlHeight : DuplaMetrics.controlHeight
+    }
+
     private var fill: Color {
         switch variant {
         case .primary: DuplaColors.ink
         case .lavender: DuplaColors.lavender
-        case .outline, .pencil: .clear
+        case .outline, .pencil, .icon: .clear
         }
     }
     
     private var horizontalPadding: CGFloat {
         switch variant {
-            case .pencil:
+            case .pencil, .icon:
                 0
             default:
                 size == .small ? DuplaMetrics.medium : DuplaMetrics.large
@@ -102,6 +108,18 @@ public extension ButtonStyle where Self == DuplaButtonStyle {
                 }
             }
         }
+    }
+    .padding(DuplaMetrics.section)
+    .background(DuplaColors.paper)
+}
+
+#Preview("Boutons icônes · disponible et désactivé") {
+    HStack(spacing: DuplaMetrics.extraSmall) {
+        Button {} label: { Image(systemName: "arrow.uturn.backward") }
+            .buttonStyle(.dupla(.icon, size: .small))
+        Button {} label: { Image(systemName: "arrow.uturn.forward") }
+            .buttonStyle(.dupla(.icon, size: .small))
+            .disabled(true)
     }
     .padding(DuplaMetrics.section)
     .background(DuplaColors.paper)
