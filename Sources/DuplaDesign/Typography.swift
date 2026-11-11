@@ -23,6 +23,7 @@ public enum DuplaTextStyle {
     case body
     case label
     case caption
+    case metadata
 
     public var font: Font { font(weight: .regular) }
 
@@ -35,6 +36,7 @@ public enum DuplaTextStyle {
         case .body: weight.applying(to: .body)
         case .label: DuplaFont.mono(weight).font(size: 14, relativeTo: .callout)
         case .caption: DuplaFont.mono(weight).font(size: 12, relativeTo: .caption)
+        case .metadata: weight.applying(to: .system(size: 11))
         }
     }
 }
@@ -108,6 +110,8 @@ private enum DuplaFont: Hashable {
             .duplaTextStyle(.label)
         Text("12 photos")
             .duplaTextStyle(.caption)
+        Text("11 nov. · Créée le 11 novembre")
+            .duplaTextStyle(.metadata)
     }
     .foregroundStyle(DuplaColors.text)
     .padding(DuplaMetrics.section)
