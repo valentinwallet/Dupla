@@ -40,6 +40,8 @@ public struct DuplaSidebarSection<Actions: View>: View {
             .accessibilityAddTraits(isSelected ? [.isSelected] : [])
 
             actions
+                .menuStyle(.button)
+                .buttonStyle(.plain)
                 .duplaTextStyle(.label)
 
             if let expansion {
@@ -134,14 +136,22 @@ public extension DuplaSidebarItem where Actions == EmptyView {
                 Image(systemName: "plus")
                     .frame(width: DuplaMetrics.smallControlHeight, height: DuplaMetrics.controlHeight)
             }
-            .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
             .fixedSize()
         }
         DuplaSidebarSection("Bibliothèque", icon: .library, isSelected: false,
                             expansion: .constant(true), action: {})
         DuplaSidebarSection("Versions", icon: .versions, isSelected: false,
-                            expansion: .constant(false), action: {})
+                            expansion: .constant(false), action: {}) {
+            Menu {
+                Button("Nouvelle version…") {}
+            } label: {
+                Image(systemName: "plus")
+                    .frame(width: DuplaMetrics.smallControlHeight, height: DuplaMetrics.controlHeight)
+            }
+            .menuIndicator(.hidden)
+            .fixedSize()
+        }
     }
     .padding(DuplaMetrics.medium)
     .frame(width: 252)

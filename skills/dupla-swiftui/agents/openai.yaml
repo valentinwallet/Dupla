@@ -1,0 +1,4 @@
+interface:
+  display_name: "SwiftUI Dupla"
+  short_description: "SwiftUI cohérent, previews isolées et DuplaDesign"
+  default_prompt: "Utilise $dupla-swiftui pour réaliser cette tâche SwiftUI en respectant les règles du dépôt et DuplaDesign."
