@@ -30,7 +30,7 @@ public struct DuplaButtonStyle: ButtonStyle {
                         .offset(y: 5)
                 }
             }
-            .padding(.horizontal, DuplaMetrics.large)
+            .padding(.horizontal, self.horizontalPadding)
             .padding(.vertical, DuplaMetrics.small)
             .frame(minHeight: DuplaMetrics.controlHeight)
             .background(fill, in: shape)
@@ -51,6 +51,15 @@ public struct DuplaButtonStyle: ButtonStyle {
         case .outline, .pencil: .clear
         }
     }
+    
+    private var horizontalPadding: CGFloat {
+        switch variant {
+            case .pencil:
+                0
+            default:
+                DuplaMetrics.large
+        }
+    }
 }
 
 public extension ButtonStyle where Self == DuplaButtonStyle {
@@ -61,18 +70,18 @@ public extension ButtonStyle where Self == DuplaButtonStyle {
 
 #if DEBUG
 #Preview("Boutons Dupla") {
-    VStack(spacing: DuplaMetrics.medium) {
+    VStack(alignment: .leading, spacing: DuplaMetrics.medium) {
         Button("Importer une photo…") {}
             .buttonStyle(.dupla())
         Button("Voir la version") {}
             .buttonStyle(.dupla(.outline))
         Button("À explorer") {}
             .buttonStyle(.dupla(.lavender))
-        Button("Modifier la note") {}
-            .buttonStyle(.dupla(.pencil))
         Button("Enregistrer") {}
             .buttonStyle(.dupla())
             .disabled(true)
+        Button("Modifier la note") {}
+            .buttonStyle(.dupla(.pencil))
     }
     .padding(DuplaMetrics.section)
     .background(DuplaColors.paper)
