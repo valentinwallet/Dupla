@@ -2,8 +2,8 @@ import SwiftUI
 
 public enum DuplaColors {
     /// Outer chrome, supporting panels, then paper form the surface hierarchy.
-    public static let chrome = Color(red: 0.78, green: 0.77, blue: 0.74)
-    public static let panel = Color(red: 0.88, green: 0.87, blue: 0.84)
+    public static let chrome = Color(red: 0.940, green: 0.928, blue: 0.900)
+    public static let panel = Color(red: 0.953, green: 0.941, blue: 0.912)
     public static let paper = Color("Paper", bundle: .module)
     public static let ink = Color("Ink", bundle: .module)
     public static let onInk = Color("OnInk", bundle: .module)
@@ -23,6 +23,7 @@ public enum DuplaMetrics {
     public static let section: CGFloat = 24
     public static let controlRadius: CGFloat = 7
     public static let controlHeight: CGFloat = 48
+    public static let smallControlHeight: CGFloat = 32
 }
 
 #if DEBUG
